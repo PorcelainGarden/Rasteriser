@@ -137,6 +137,10 @@ void Model::CalculateBackfaces(Camera camera)
 
 
 
+bool polygonOrder(Polygon3D polygon1, Polygon3D polygon2)
+{
+	return polygon1.GetAverageZ() > polygon2.GetAverageZ();
+}
 
 void Model::Sort(void)
 {
@@ -161,10 +165,7 @@ void Model::Sort(void)
 	std::sort(_polygons.begin(), _polygons.end(), polygonOrder);
 }
 
-bool polygonOrder(Polygon3D polygon1, Polygon3D polygon2)
-{
-	return polygon1.GetAverageZ() > polygon2.GetAverageZ();
-}
+
 
 /*void Model::CalculateAmbientLighting(AmbientLight amb)
 {

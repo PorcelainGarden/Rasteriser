@@ -42,6 +42,7 @@ public:
 	static Matrix YRotationMatrix(float angle);
 	static Matrix XRotationMatrix(float angle);
 	static Matrix ZRotationMatrix(float angle);
+	static Matrix XYZRotationMatrix(float x, float y, float z);
 	static Matrix TranslationMatrix(float x, float y, float z);
 
 	static Matrix ScalingMatrixXYY(float valuex, float valuey, float valuez);

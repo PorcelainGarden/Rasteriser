@@ -134,6 +134,7 @@ void Rasteriser::Render(Bitmap &bitmap)
 		_model.Dehomogenize();
 		_model.ApplyTransformToTransformedVertices(_screenTransform);
 		//TODO: Create inside the model class a method that calculates (marks) the back faces and call it here to test it as _model.CalculateBackfaces(_camera)
+		_model.CalculateBackfaces(_camera);
 		DrawWireFrame(bitmap);
 		break;
 	}

@@ -143,14 +143,26 @@ const Vertex Matrix::operator*(const Vertex &other) const
 /*static*/ Matrix Matrix::ZRotationMatrix(float angle)
 {
 	//TODO:Create the ZRotationMatrix similar to YRotationMatrix method
-	Matrix temp;
+	Matrix temp{ float(cos(angle)),float(-sin(angle)), 0, 0,
+				float(sin(angle)), float(cos(angle)), 0, 0,
+				0, 0, 1, 0,
+				0, 0, 0, 1 };
+	return temp;
+}
+
+Matrix Matrix::XYZRotationMatrix(float x, float y, float z)
+{
+	Matrix temp{ XRotationMatrix(x) * YRotationMatrix(y) * ZRotationMatrix(z) };
 	return temp;
 }
 
 /*static*/ Matrix Matrix::TranslationMatrix(float x, float y, float z)
 {
 	//TODO:Create the TranslationMatrix 
-	Matrix temp;
+	Matrix temp{ 1, 0, 0, x,
+				0, 1, 0, y,
+				0, 0, 1, z,
+				0, 0, 0, 1 };
 	return temp;
 }
 
