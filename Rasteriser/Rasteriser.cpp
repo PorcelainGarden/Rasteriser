@@ -64,7 +64,7 @@ void Rasteriser::DrawWireFrame(Bitmap &bitmap)
 					LineTo(bitmap.GetDC(), tempVertex2.GetIntX(), tempVertex2.GetIntY());
 					LineTo(bitmap.GetDC(), tempVertex0.GetIntX(), tempVertex0.GetIntY());
 				}
-	}
+			}
 	
 
 }
@@ -114,6 +114,51 @@ void Rasteriser::Update(Bitmap &bitmap)
 		_displayText = L"Wireframe: Y Axis Scale";
 		//
 	}
+	else if (_frameCount < 320)
+	{
+		_phase = RenderPhase::WireframeScaleZ;
+		_displayText = L"Wireframe: Z Axis Scale";
+	}
+	else if (_frameCount < 410)
+	{
+		_phase = RenderPhase::WireframeScaleXYZ;
+		_displayText = L"Wireframe: XYZ Axis Scale";
+	}
+	else if (_frameCount < 500)
+	{
+		_phase = RenderPhase::WireframeRotateX;
+		_displayText = L"Wireframe: X Axis Rotate";
+	}
+	else if (_frameCount < 590)
+	{
+		_phase = RenderPhase::WireframeRotateY;
+		_displayText = L"Wireframe: Y Axis Rotate";
+	}
+	else if (_frameCount < 680)
+	{
+		_phase = RenderPhase::WireframeRotateZ;
+		_displayText = L"Wireframe: Z Axis Rotate";
+	}
+	else if (_frameCount < 770)
+	{
+		_phase = RenderPhase::WireframeTranslateX;
+		_displayText = L"Wireframe: X Axis Translate";
+	}
+	else if (_frameCount < 860)
+	{
+		_phase = RenderPhase::WireframeTranslateY;
+		_displayText = L"Wireframe: Y Axis Translate";
+	}
+	else if (_frameCount < 950)
+	{
+		_phase = RenderPhase::WireframeTranslateZ;
+		_displayText = L"Wireframe: Z Axis Translate";
+	}
+	else if (_frameCount < 1040)
+	{
+		_phase = RenderPhase::WireframeTranslateXYZ;
+		_displayText = L"Wireframe: XYZ Axis Translate";
+	}
 	_frameCount++;
 
 
@@ -140,10 +185,153 @@ void Rasteriser::Render(Bitmap &bitmap)
 	}
 	case RenderPhase::WireframeScaleX:
 	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.01f;
+		_modelTransform = Matrix::ScalingMatrixX(_angle);
+		DrawWireFrame(bitmap);
 		break;
 	}
 	case RenderPhase::WireframeScaleY:
 	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.01f;
+		_modelTransform = Matrix::ScalingMatrixY(_angle);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeScaleZ:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.01f;
+		_modelTransform = Matrix::ScalingMatrixZ(_angle);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeScaleXYZ:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle -= 0.01f;
+		_angle2 -= 0.01f;
+		_angle3 -= 0.01f;
+		_modelTransform = Matrix::ScalingMatrixXYZ(_angle, _angle2, _angle3);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeRotateX:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.01f;
+		_modelTransform = Matrix::XRotationMatrix(_angle);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeRotateY:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.01f;
+		_modelTransform = Matrix::YRotationMatrix(_angle);
+		_model.CalculateBackfaces(_camera);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeRotateZ:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.01f;
+		_modelTransform = Matrix::ZRotationMatrix(_angle);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeRotateXYZ:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.01f;
+		_angle2 += 0.01f;
+		_angle3 += 0.01f;
+		_modelTransform = Matrix::XYZRotationMatrix(_angle, _angle2, _angle3);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeTranslateX:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.1f;
+		_modelTransform = Matrix::TranslationMatrix(_angle, 0, 0);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeTranslateY:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.1f;
+		_modelTransform = Matrix::TranslationMatrix(0, _angle, 0);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeTranslateZ:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.1f;
+		_modelTransform = Matrix::TranslationMatrix(0, 0, _angle);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeTranslateXYZ:
+	{
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		_angle += 0.1f;
+		_angle2 += 0.01f;
+		_angle3 += 0.01f;
+		_modelTransform = Matrix::TranslationMatrix(_angle, _angle2, _angle3);
+		DrawWireFrame(bitmap);
 		break;
 	}
 	default:

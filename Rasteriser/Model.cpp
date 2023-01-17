@@ -167,13 +167,5 @@ void Model::Sort(void)
 
 
 
-/*void Model::CalculateAmbientLighting(AmbientLight amb)
-{
-	vector<float> totalRGB = vector<float>{ 0,0,0 };
-
-}*/
-
-
-
 
 

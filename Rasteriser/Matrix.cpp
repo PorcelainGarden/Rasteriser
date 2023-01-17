@@ -121,6 +121,15 @@ const Vertex Matrix::operator*(const Vertex &other) const
 	return temp;
 }
 
+Matrix Matrix::ScalingMatrixZ(float value)
+{
+	Matrix temp{ 1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, value, 0,
+				0, 0, 0, 1 };
+	return temp;
+}
+
 /*static*/ Matrix Matrix::YRotationMatrix(float angle)
 {
 	Matrix temp{ float(cos(angle)), 0, float(sin(angle)), 0,
@@ -152,7 +161,7 @@ const Vertex Matrix::operator*(const Vertex &other) const
 
 Matrix Matrix::XYZRotationMatrix(float x, float y, float z)
 {
-	Matrix temp{ XRotationMatrix(x) * YRotationMatrix(y) * ZRotationMatrix(z) };
+	Matrix temp{ XRotationMatrix(x) * YRotationMatrix(y) * XRotationMatrix(z) };
 	return temp;
 }
 
@@ -166,11 +175,11 @@ Matrix Matrix::XYZRotationMatrix(float x, float y, float z)
 	return temp;
 }
 
-Matrix Matrix::ScalingMatrixXYY(float valuex, float valuey, float valuez)
+Matrix Matrix::ScalingMatrixXYZ(float x, float y, float z)
 {
-	Matrix temp{ valuex,0,0,0,
-				   0,valuey,0,0,
-				   0,0,valuez,0,
+	Matrix temp{ x,0,0,0,
+				   0,y,0,0,
+				   0,0,z,0,
 				   0,0,0,1 };
 	return temp;
 }

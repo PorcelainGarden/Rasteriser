@@ -39,13 +39,14 @@ public:
 
 	static Matrix ScalingMatrixX(float value);
 	static Matrix ScalingMatrixY(float value);
-	static Matrix YRotationMatrix(float angle);
+	static Matrix ScalingMatrixZ(float value);
 	static Matrix XRotationMatrix(float angle);
+	static Matrix YRotationMatrix(float angle);
 	static Matrix ZRotationMatrix(float angle);
 	static Matrix XYZRotationMatrix(float x, float y, float z);
 	static Matrix TranslationMatrix(float x, float y, float z);
 
-	static Matrix ScalingMatrixXYY(float valuex, float valuey, float valuez);
+	static Matrix ScalingMatrixXYZ(float valuex, float valuey, float valuez);
 
 private:
 	float _matrixArray[ROWS][COLS];

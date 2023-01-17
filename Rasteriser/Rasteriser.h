@@ -17,7 +17,16 @@ enum class RenderPhase
 	Start,
 	WireframeScaleX,
 	WireframeScaleY,
-	WireframeScaleZ
+	WireframeScaleZ,
+	WireframeScaleXYZ,
+	WireframeRotateX,
+	WireframeRotateY,
+	WireframeRotateZ,
+	WireframeRotateXYZ,
+	WireframeTranslateX,
+	WireframeTranslateY,
+	WireframeTranslateZ,
+	WireframeTranslateXYZ,
 
 };
 class Rasteriser : public Framework
@@ -43,6 +52,8 @@ private:
 	Matrix _screenTransform;
 	string _modelpath;
 	float _angle;
+	float _angle2;
+	float _angle3;
 
 	// For displaying purposes
 	int _frameCount{ 0 };
