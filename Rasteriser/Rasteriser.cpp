@@ -27,6 +27,7 @@ bool Rasteriser::Initialise()
 	return true;
 }
 
+
 void Rasteriser::DrawWireFrame(Bitmap &bitmap)
 {
 
@@ -40,17 +41,18 @@ void Rasteriser::DrawWireFrame(Bitmap &bitmap)
 	// 3. Get the current transformations from the _model and store it to a local list std::vector<Vertex>
 	std::vector<Vertex> tempvertex(_model.GetTransform());
 	// 4. Create a Pen while store the current pen
-	 		HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 255, 255));
+	 		HPEN hPen = CreatePen(PS_SOLID, 1, RGB(100, 12, 3));
 			HGDIOBJ oldPen = SelectObject(bitmap.GetDC(), hPen);
 	// 5. Make a loop for 0 till you reach the polygon size
 	//    a. for each polygon get the Index of it and then the Vertex that corresponds to this index.
 	//       You will have three Vertexes for each polygon
 	//    b. Draw the polygon (triangle) using the LineTo function
 	//		
+			
 			for (int i = 0; i < _model.GetPolygonCount(); i++)
 			{
-				bool cull = temppolygon[i].GetCull();
-				if (cull == false)
+				bool culling = temppolygon[i].GetCull();
+				if (culling == false && _frameCount >= 1040 && _frameCount < 1130)
 				{
 					int tempIndex0 = temppolygon[i].GetIndex(0);
 					Vertex tempVertex0(tempvertex[tempIndex0]);
@@ -64,9 +66,67 @@ void Rasteriser::DrawWireFrame(Bitmap &bitmap)
 					LineTo(bitmap.GetDC(), tempVertex2.GetIntX(), tempVertex2.GetIntY());
 					LineTo(bitmap.GetDC(), tempVertex0.GetIntX(), tempVertex0.GetIntY());
 				}
-			}
-	
+				else if (culling == true && _frameCount >= 1130 )
+				{
+					int tempIndex0 = temppolygon[i].GetIndex(0);
+					Vertex tempVertex0(tempvertex[tempIndex0]);
+					int tempIndex1 = temppolygon[i].GetIndex(1);
+					Vertex tempVertex1(tempvertex[tempIndex1]);
+					int tempIndex2 = temppolygon[i].GetIndex(2);
+					Vertex tempVertex2(tempvertex[tempIndex2]);
 
+					MoveToEx(bitmap.GetDC(), tempVertex0.GetIntX(), tempVertex0.GetIntY(), NULL);
+					LineTo(bitmap.GetDC(), tempVertex1.GetIntX(), tempVertex1.GetIntY());
+					LineTo(bitmap.GetDC(), tempVertex2.GetIntX(), tempVertex2.GetIntY());
+					LineTo(bitmap.GetDC(), tempVertex0.GetIntX(), tempVertex0.GetIntY());
+				}
+				else if (_frameCount < 1040) {
+					int tempIndex0 = temppolygon[i].GetIndex(0);
+					Vertex tempVertex0(tempvertex[tempIndex0]);
+					int tempIndex1 = temppolygon[i].GetIndex(1);
+					Vertex tempVertex1(tempvertex[tempIndex1]);
+					int tempIndex2 = temppolygon[i].GetIndex(2);
+					Vertex tempVertex2(tempvertex[tempIndex2]);
+
+					MoveToEx(bitmap.GetDC(), tempVertex0.GetIntX(), tempVertex0.GetIntY(), NULL);
+					LineTo(bitmap.GetDC(), tempVertex1.GetIntX(), tempVertex1.GetIntY());
+					LineTo(bitmap.GetDC(), tempVertex2.GetIntX(), tempVertex2.GetIntY());
+					LineTo(bitmap.GetDC(), tempVertex0.GetIntX(), tempVertex0.GetIntY());
+				}
+
+			}
+}
+void Rasteriser::DrawSolid(Bitmap& bitmap)
+{
+	HDC hDc = bitmap.GetDC();
+	const vector<Polygon3D>& polygons = _model.GetPolygons();
+	const vector<Vertex>& vertices = _model.GetTransform();
+	POINT points[3];
+
+	for (int i = 0; i < _model.GetPolygonCount(); i++)
+	{
+		const Polygon3D& polygon = polygons[i];
+		if (polygon.GetCull())
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				points[j].x = (long)vertices[polygons[i].GetIndex(j)].GetX();
+				points[j].y = (long)vertices[polygons[i].GetIndex(j)].GetY();
+			}
+
+			HPEN hPen = CreatePen(PS_SOLID, 1, polygon.GetColour());
+			HGDIOBJ oldPen = SelectObject(hDc, hPen);
+			HBRUSH brush = CreateSolidBrush(polygon.GetColour());
+			HGDIOBJ old_brush = SelectObject(hDc, brush);
+
+			Polygon(hDc, points, 3);
+
+			SelectObject(hDc, oldPen);
+			DeleteObject(hPen);
+			SelectObject(hDc, old_brush);
+			DeleteObject(brush);
+		}
+	}
 }
 
 
@@ -90,9 +150,9 @@ void Rasteriser::GenerateScreenMatrix(float d, int width, int height) // ScrenTr
 	_screenTransform = view;
 }
 
-void Rasteriser::Update(Bitmap &bitmap)  
+void Rasteriser::Update(Bitmap& bitmap)
 {
-	
+
 	float aspectRatio = float(float(bitmap.GetWidth()) / float(bitmap.GetHeight()));
 	GenerateProjectionMatrix(1, aspectRatio);
 	GenerateScreenMatrix(1, bitmap.GetWidth(), bitmap.GetHeight());
@@ -118,46 +178,73 @@ void Rasteriser::Update(Bitmap &bitmap)
 	{
 		_phase = RenderPhase::WireframeScaleZ;
 		_displayText = L"Wireframe: Z Axis Scale";
+		//
 	}
 	else if (_frameCount < 410)
 	{
 		_phase = RenderPhase::WireframeScaleXYZ;
 		_displayText = L"Wireframe: XYZ Axis Scale";
+		//
 	}
 	else if (_frameCount < 500)
 	{
 		_phase = RenderPhase::WireframeRotateX;
 		_displayText = L"Wireframe: X Axis Rotate";
+		//
 	}
 	else if (_frameCount < 590)
 	{
 		_phase = RenderPhase::WireframeRotateY;
 		_displayText = L"Wireframe: Y Axis Rotate";
+		//
 	}
 	else if (_frameCount < 680)
 	{
 		_phase = RenderPhase::WireframeRotateZ;
 		_displayText = L"Wireframe: Z Axis Rotate";
+		//
 	}
 	else if (_frameCount < 770)
 	{
 		_phase = RenderPhase::WireframeTranslateX;
 		_displayText = L"Wireframe: X Axis Translate";
+		//
 	}
 	else if (_frameCount < 860)
 	{
 		_phase = RenderPhase::WireframeTranslateY;
 		_displayText = L"Wireframe: Y Axis Translate";
+		//
 	}
 	else if (_frameCount < 950)
 	{
 		_phase = RenderPhase::WireframeTranslateZ;
 		_displayText = L"Wireframe: Z Axis Translate";
+		//
 	}
 	else if (_frameCount < 1040)
 	{
 		_phase = RenderPhase::WireframeTranslateXYZ;
 		_displayText = L"Wireframe: XYZ Axis Translate";
+		//
+	}
+	else if (_frameCount < 1130)
+	{
+
+		_phase = RenderPhase::WireframeBackface;
+		_displayText = L"Wireframe: Backfaces";
+		//
+	}
+	else if (_frameCount < 1220)
+	{
+
+		_phase = RenderPhase::WireframeBackface;
+		_displayText = L"Wireframe: Innerfaces";
+	}
+	else if (_frameCount < 1310)
+	{
+		_phase = RenderPhase::WireframeSolidflat;
+		_displayText = L"Wireframe: Solid Flat";
 	}
 	_frameCount++;
 
@@ -226,10 +313,8 @@ void Rasteriser::Render(Bitmap &bitmap)
 		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
 		_model.Dehomogenize();
 		_model.ApplyTransformToTransformedVertices(_screenTransform);
-		_angle -= 0.01f;
-		_angle2 -= 0.01f;
-		_angle3 -= 0.01f;
-		_modelTransform = Matrix::ScalingMatrixXYZ(_angle, _angle2, _angle3);
+		_angle -= 0.02f;
+		_modelTransform = Matrix::ScalingMatrixXYZ(_angle, _angle, _angle);
 		DrawWireFrame(bitmap);
 		break;
 	}
@@ -278,9 +363,7 @@ void Rasteriser::Render(Bitmap &bitmap)
 		_model.Dehomogenize();
 		_model.ApplyTransformToTransformedVertices(_screenTransform);
 		_angle += 0.01f;
-		_angle2 += 0.01f;
-		_angle3 += 0.01f;
-		_modelTransform = Matrix::XYZRotationMatrix(_angle, _angle2, _angle3);
+		_modelTransform = Matrix::XYZRotationMatrix(_angle, _angle, _angle);
 		DrawWireFrame(bitmap);
 		break;
 	}
@@ -328,10 +411,50 @@ void Rasteriser::Render(Bitmap &bitmap)
 		_model.Dehomogenize();
 		_model.ApplyTransformToTransformedVertices(_screenTransform);
 		_angle += 0.1f;
-		_angle2 += 0.01f;
-		_angle3 += 0.01f;
-		_modelTransform = Matrix::TranslationMatrix(_angle, _angle2, _angle3);
+		_modelTransform = Matrix::TranslationMatrix(_angle, _angle, _angle);
 		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeBackface:
+	{
+		_angle += 0.01f;
+		_modelTransform = Matrix::XYZRotationMatrix(_angle, _angle, _angle);
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.CalculateBackfaces(_camera);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.Sort();
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeInnerface:
+	{
+		_angle += 0.01f;
+		_modelTransform = Matrix::XYZRotationMatrix(_angle, _angle, _angle);
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.CalculateBackfaces(_camera);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.Sort();
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		DrawWireFrame(bitmap);
+		break;
+	}
+	case RenderPhase::WireframeSolidflat:
+	{
+		_angle += 0.01f;
+		_modelTransform = Matrix::XYZRotationMatrix(_angle, _angle, _angle);
+		_model.ApplyTransformToLocalVertices(_modelTransform);
+		_model.CalculateBackfaces(_camera);
+		_model.ApplyTransformToTransformedVertices(_camera.GetCameraMatrix());
+		_model.Sort();
+		_model.ApplyTransformToTransformedVertices(_perspectiveTransform);
+		_model.Dehomogenize();
+		_model.ApplyTransformToTransformedVertices(_screenTransform);
+		DrawSolid(bitmap);
 		break;
 	}
 	default:

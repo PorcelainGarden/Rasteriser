@@ -27,6 +27,9 @@ enum class RenderPhase
 	WireframeTranslateY,
 	WireframeTranslateZ,
 	WireframeTranslateXYZ,
+	WireframeBackface,
+	WireframeInnerface,
+	WireframeSolidflat
 
 };
 class Rasteriser : public Framework
@@ -52,8 +55,6 @@ private:
 	Matrix _screenTransform;
 	string _modelpath;
 	float _angle;
-	float _angle2;
-	float _angle3;
 
 	// For displaying purposes
 	int _frameCount{ 0 };

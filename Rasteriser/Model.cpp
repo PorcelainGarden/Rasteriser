@@ -6,6 +6,7 @@ Model::Model()
 	_vertices.clear();
 	_transform.clear();
 
+
 }
 
 
@@ -164,8 +165,3 @@ void Model::Sort(void)
 	}
 	std::sort(_polygons.begin(), _polygons.end(), polygonOrder);
 }
-
-
-
-
-

@@ -48,5 +48,6 @@ private:
 	std::vector<Polygon3D> _polygons;
 	std::vector<Vertex> _vertices;
 	std::vector<Vertex> _transform;
+	bool _boolStatus = false;
 	
 };
